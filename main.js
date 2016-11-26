@@ -98,7 +98,7 @@ router.route('/startup/:startup_id/balance')
             }
             else {
               console.log("Startup Balance: " + result );
-              res.json({ message: "Startup Balance: " + result });
+              res.json({ message: result });
             }
           }]);
       }]);
@@ -114,7 +114,7 @@ router.route('/startup/:startup_id/deposit/:amount')
             }
             else {
               console.log("Startup Deposit: " + result );
-              res.json({ message: "Startup Deposit: " + result });
+              res.json({ message: result });
             }
           }]);
       }]);
@@ -130,7 +130,7 @@ router.route('/startup/:startup_id/withdraw/:amount')
           }
           else {
             console.log("Startup withdraw: " + result );
-            res.json({ message: "Startup withdraw: " + result });
+            res.json({ message: result });
           }
         }]);
     }]);
@@ -180,6 +180,7 @@ contractIncubatorFactory.new.apply(contractIncubatorFactory, [ {from: account, d
   console.log(incubatorInstance.address);
   incubatorInstanceGlobal = incubatorInstance;
 
+  console.log("Create Incubator");
 
   createStartup("chaintonic");
   createStartup("ustglobal");
@@ -193,7 +194,7 @@ contractIncubatorFactory.new.apply(contractIncubatorFactory, [ {from: account, d
        console.log(error);
      }
     else {
-      console.log("Incubator: " + result);
+      
       var startupInstance = contractStartupFactory.at(result);
       startupInstance["getName"].apply(startupInstance, [(error,result)=> {
         if (error) {
