@@ -12,12 +12,18 @@ var erisdbURL; /* ErisDB RPC URL */
 var pipe; /* Pipe for creating contracts */
 var contractManager;/* Contract Manager for creating contracts*/
 var account = accounts[0].address;
-var greeterSource =  fs.readFileSync("./contracts/incubator.sol", "utf8");
-
-//'contract greeter { string greeting; function greeter(string _greeting) public { greeting = _greeting; } function greet() constant returns (string) { return greeting; } }';
+var incubatorSource =  fs.readFileSync("./contracts/incubator.sol", "utf8");
 
 
-var contractInstanceGlobal = {};
+var incubatorInstanceGlobal = {}; 
+var startupInstanceGlobal = {}; 
+/* Compile the Incubator Contract*/
+var compiledContract = solc.compile(incubatorSource);
+//console.log(compiledContract)
+var contractIncubatorFactory = {};
+// console.log(contractFactory)
+var contractStartupFactory = {};
+
 
 /* Init server */
 var express = require('express');
@@ -39,35 +45,91 @@ var router = express.Router();              // get an instance of the express Ro
 // test route to make sure everything is working
 router.get('/', function(req, res) {
     
-    var contractInstance2 = contractFactory.at(contractInstanceGlobal.address);
-      contractInstance2["changeGreet"].apply(contractInstance2, [ "hello hackathon", {from: account}, () => {
-          contractInstance2["greet"].apply(contractInstance2, [(error,result)=> {
-             if (error) {
-               console.log(error);
-             }
-            else {
-              console.log(result);
-              res.json({ message: 'hooray! welcome to our api! ' + result});
-          }
-      } ])}]);
+    var contractInstance2 = contractFactory.at(incubatorInstanceGlobal.address);
+    contractInstance2["changeGreet"].apply(contractInstance2, [ "hello hackathon", {from: account}, () => {
+        contractInstance2["greet"].apply(contractInstance2, [(error,result)=> {
+            if (error) {
+              console.log(error);
+            }
+          else {
+            console.log(result);
+            res.json({ message: 'hooray! welcome to our api! ' + result});
+        }
+    } ])}]);
     
 });
 
+function parseStrToHex (str) {
+  return Buffer.from(str).toString('hex');
+}
+
+function parseHexToStr (hex) {
+  return  ((new Buffer(hex, "hex")).toString('utf8')).replace(/\0/g, '');
+}
+
 router.route('/startup/:startup_id')
   .get(function(req, res) {
-    var contractInstance2 = contractFactory.at(contractInstanceGlobal.address);
-        contractInstance2["changeGreet"].apply(contractInstance2, [ req.params.startup_id, {from: account}, () => {
-            contractInstance2["greet"].apply(contractInstance2, [(error,result)=> {
-              if (error) {
-                console.log(error);
-              }
-              else {
-                console.log(result);
-                res.json({ message: 'hooray! welcome to our api! ' + result});
+      incubatorInstanceGlobal["getStartup"].apply(incubatorInstanceGlobal, [ parseStrToHex(req.params.startup_id), {from: account}, (error, result) => {
+          var startupInstance = contractStartupFactory.at(result);
+          startupInstance["getName"].apply(startupInstance, [(error,result)=> {
+            if (error) {
+              console.log("Startup ERROR: " + error);
             }
-        } ])}]);
-      
+            else {
+              console.log("Startup: " + parseHexToStr(result) );
+              res.json({ message: "Startup: " + parseHexToStr(result) });
+            }
+          }]);
+      }]);
   });
+
+router.route('/startup/:startup_id/balance')
+  .get(function(req, res) {
+      incubatorInstanceGlobal["getStartup"].apply(incubatorInstanceGlobal, [ parseStrToHex(req.params.startup_id), {from: account}, (error, result) => {
+          var startupInstance = contractStartupFactory.at(result);
+          startupInstance["getbalance"].apply(startupInstance, [(error,result)=> {
+            if (error) {
+              console.log("Startup ERROR: " + error);
+            }
+            else {
+              console.log("Startup Balance: " + result );
+              res.json({ message: "Startup Balance: " + result });
+            }
+          }]);
+      }]);
+  });
+
+router.route('/startup/:startup_id/deposit/:amount')
+  .get(function(req, res) {
+      incubatorInstanceGlobal["getStartup"].apply(incubatorInstanceGlobal, [ parseStrToHex(req.params.startup_id), {from: account}, (error, result) => {
+          var startupInstance = contractStartupFactory.at(result);
+          startupInstance["deposit"].apply(startupInstance, [ req.params.amount, (error,result)=> {
+            if (error) {
+              console.log("Startup ERROR: " + error);
+            }
+            else {
+              console.log("Startup Deposit: " + result );
+              res.json({ message: "Startup Deposit: " + result });
+            }
+          }]);
+      }]);
+  });
+
+router.route('/startup/:startup_id/withdraw/:amount')
+.get(function(req, res) {
+    incubatorInstanceGlobal["getStartup"].apply(incubatorInstanceGlobal, [ parseStrToHex(req.params.startup_id), {from: account}, (error, result) => {
+        var startupInstance = contractStartupFactory.at(result);
+        startupInstance["withdraw"].apply(startupInstance, [ req.params.amount, (error,result)=> {
+          if (error) {
+            console.log("Startup ERROR: " + error);
+          }
+          else {
+            console.log("Startup withdraw: " + result );
+            res.json({ message: "Startup withdraw: " + result });
+          }
+        }]);
+    }]);
+});
 
 // more routes for our API will happen here
 
@@ -83,6 +145,7 @@ app.listen(appEnv.port, '0.0.0.0', function() { //appEnv.port
   console.log("server starting on " + appEnv.url);
 });
 
+
 /*Initialize ERISDB*/
 erisdb = erisDbFactory.createInstance("http://134.168.62.175:1337/rpc");
 erisdb.start(function(error){
@@ -94,48 +157,40 @@ erisdb.start(function(error){
 pipe = new erisContracts.pipes.DevPipe(erisdb, accounts); /* Create a new pipe*/
 contractManager = erisContracts.newContractManager(pipe); /*Create a new contract object using the pipe */
 
-/*Get account list*/
-erisdb.accounts().getAccounts((err, res) => { console.log(res.accounts.map(item => {
-  return ({
-    ADDR: item.address,
-    BALANCE: item.balance
-  })
-})) });
-
-/* Compile the Greeter Contract*/
-var compiledContract = solc.compile(greeterSource);
-//console.log(compiledContract)
-var contractFactory = contractManager.newContractFactory(JSON.parse(compiledContract.contracts.greeter.interface)); //parameter is abi
+contractIncubatorFactory = contractManager.newContractFactory(JSON.parse(compiledContract.contracts.incubator.interface)); //parameter is abi
 // console.log(contractFactory)
+contractStartupFactory = contractManager.newContractFactory(JSON.parse(compiledContract.contracts.startup.interface)); //parameter is abi
 
+// /*Get account list*/
+// erisdb.accounts().getAccounts((err, res) => { console.log(res.accounts.map(item => {
+//   return ({
+//     ADDR: item.address,
+//     BALANCE: item.balance
+//   })
+// })) });
 
 
 /* Send the contract */
-contractFactory.new.apply(contractFactory, ["Hello World",
- {from: account, data:compiledContract.contracts.greeter.bytecode}, (err, contractInstance)=> {
-  console.log(contractInstance.address);
-  contractInstanceGlobal = contractInstance;
+contractIncubatorFactory.new.apply(contractIncubatorFactory, [ {from: account, data:compiledContract.contracts.incubator.bytecode}, (err, incubatorInstance)=> {
+  console.log(incubatorInstance.address);
+  incubatorInstanceGlobal = incubatorInstance;
   //get data from contract
-  contractInstance["greet"].apply(contractInstance, [(error,result)=> {
+
+  incubatorInstanceGlobal["addStartup"].apply(incubatorInstanceGlobal, [ Buffer.from("ChainTonic").toString('hex') , {from: account}, (error,result)=> {
      if (error) {
        console.log(error);
      }
     else {
-      console.log(result);
-
-
-      // contractInstance2 = contractFactory.at(contractInstance.address);
-      // contractInstance2["changeGreet"].apply(contractInstance2, [ "hello hackathon", {from: account}, () => {
-      //     contractInstance2["greet"].apply(contractInstance2, [(error,result)=> {
-      //        if (error) {
-      //          console.log(error);
-      //        }
-      //       else {
-      //         console.log(result);
-      //     }
-      // } ])}]);
-
+      console.log("Incubator: " + result);
+      var startupInstance = contractStartupFactory.at(result);
+      startupInstance["getName"].apply(startupInstance, [(error,result)=> {
+        if (error) {
+          console.log("Startup ERROR: " + error);
+        }
+        else {
+          console.log("Startup: " + parseHexToStr(result) );
+        }
+      }]);
     }
   }]);
-
  }]);
