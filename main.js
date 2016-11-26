@@ -71,13 +71,18 @@ router.route('/startup/:startup_id')
   .get(function(req, res) {
       incubatorInstanceGlobal["getStartup"].apply(incubatorInstanceGlobal, [ parseStrToHex(req.params.startup_id), {from: account}, (error, result) => {
           var startupInstance = contractStartupFactory.at(result);
-          startupInstance["getName"].apply(startupInstance, [(error,result)=> {
+          startupInstance["getData"].apply(startupInstance, [(error,result)=> {
             if (error) {
               console.log("Startup ERROR: " + error);
             }
             else {
-              console.log("Startup: " + parseHexToStr(result) );
-              res.json({ message: "Startup: " + parseHexToStr(result) });
+              // var resultSplit = result.split(",");
+              console.log("Startup Data: " + result );
+              // console.log("Startup Balance: " + resultSplit[1] );
+              res.json({ message: {
+                name: parseHexToStr(result[0]),
+                balance: result[1]}
+              });
             }
           }]);
       }]);
@@ -174,9 +179,16 @@ contractStartupFactory = contractManager.newContractFactory(JSON.parse(compiledC
 contractIncubatorFactory.new.apply(contractIncubatorFactory, [ {from: account, data:compiledContract.contracts.incubator.bytecode}, (err, incubatorInstance)=> {
   console.log(incubatorInstance.address);
   incubatorInstanceGlobal = incubatorInstance;
-  //get data from contract
 
-  incubatorInstanceGlobal["addStartup"].apply(incubatorInstanceGlobal, [ Buffer.from("ChainTonic").toString('hex') , {from: account}, (error,result)=> {
+
+  createStartup("chaintonic");
+  createStartup("ustglobal");
+  createStartup("unir");
+
+ }]);
+
+ function createStartup(startupName){
+     incubatorInstanceGlobal["addStartup"].apply(incubatorInstanceGlobal, [ Buffer.from(startupName).toString('hex') , {from: account}, (error,result)=> {
      if (error) {
        console.log(error);
      }
@@ -193,4 +205,4 @@ contractIncubatorFactory.new.apply(contractIncubatorFactory, [ {from: account, d
       }]);
     }
   }]);
- }]);
+ }

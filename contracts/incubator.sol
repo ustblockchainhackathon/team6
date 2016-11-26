@@ -56,16 +56,20 @@ contract startup {
     function startup(bytes32 newName){
         owner = msg.sender;
         name = newName;
+        balance = 0;
     }
     
     function balancer(uint _balance) 
     public { balance = _balance; } 
-    function getbalance() constant returns (uint) { 
+    function getbalance() returns (uint) { 
         return balance; 
-    } 
-    function getName() constant returns (bytes32) { 
+    }
+    function getData() returns (bytes32, uint) { 
+        return (name, balance);
+    }
+    function getName() returns (bytes32) { 
         return name; 
-    } 
+    }
     function deposit(uint amount) returns (bool res) {
         // If the amount they send is 0, return false.
         if (amount == 0){
