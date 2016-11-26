@@ -29,7 +29,7 @@ app.use(express.static(__dirname + '/public'));
 var appEnv = cfenv.getAppEnv();
 
 // start server on the specified port and binding host
-app.listen(3000, '0.0.0.0', function() { //appEnv.port
+app.listen(appEnv.port, '0.0.0.0', function() { //appEnv.port
   // print a message when the server starts listening
   console.log("server starting on " + appEnv.url);
 });
@@ -39,6 +39,7 @@ erisdb = erisDbFactory.createInstance(nodes[0]);
 erisdb.start(function(error){
     if(!error){
         console.log("Ready to go");
+        console.log("port " + appEnv.port);
     }
 });
 
