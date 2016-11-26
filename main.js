@@ -1,6 +1,9 @@
 const erisDbFactory = require('eris-db');
 const erisContracts = require('eris-contracts');
 const solc = require('solc');
+var fs = require('fs');
+
+
 const accounts = require("./accounts.js").accounts;
 const nodes = require("./ips.js").ips;
 
@@ -9,7 +12,9 @@ var erisdbURL; /* ErisDB RPC URL */
 var pipe; /* Pipe for creating contracts */
 var contractManager;/* Contract Manager for creating contracts*/
 var account = accounts[0].address;
-var greeterSource = 'contract greeter { string greeting; function greeter(string _greeting) public { greeting = _greeting; } function greet() constant returns (string) { return greeting; } }'
+var greeterSource =  fs.readFileSync("./contracts/incubator.sol", "utf8");
+
+//'contract greeter { string greeting; function greeter(string _greeting) public { greeting = _greeting; } function greet() constant returns (string) { return greeting; } }';
 
 
 /* Init server */
