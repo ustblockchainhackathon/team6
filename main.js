@@ -17,6 +17,8 @@ var greeterSource =  fs.readFileSync("./contracts/incubator.sol", "utf8");
 //'contract greeter { string greeting; function greeter(string _greeting) public { greeting = _greeting; } function greet() constant returns (string) { return greeting; } }';
 
 
+var contractInstanceGlobal = {};
+
 /* Init server */
 var express = require('express');
 
@@ -36,8 +38,36 @@ var router = express.Router();              // get an instance of the express Ro
 
 // test route to make sure everything is working
 router.get('/', function(req, res) {
-    res.json({ message: 'hooray! welcome to our api!' });   
+    
+    var contractInstance2 = contractFactory.at(contractInstanceGlobal.address);
+      contractInstance2["changeGreet"].apply(contractInstance2, [ "hello hackathon", {from: account}, () => {
+          contractInstance2["greet"].apply(contractInstance2, [(error,result)=> {
+             if (error) {
+               console.log(error);
+             }
+            else {
+              console.log(result);
+              res.json({ message: 'hooray! welcome to our api! ' + result});
+          }
+      } ])}]);
+    
 });
+
+router.route('/startup/:startup_id')
+  .get(function(req, res) {
+    var contractInstance2 = contractFactory.at(contractInstanceGlobal.address);
+        contractInstance2["changeGreet"].apply(contractInstance2, [ req.params.startup_id, {from: account}, () => {
+            contractInstance2["greet"].apply(contractInstance2, [(error,result)=> {
+              if (error) {
+                console.log(error);
+              }
+              else {
+                console.log(result);
+                res.json({ message: 'hooray! welcome to our api! ' + result});
+            }
+        } ])}]);
+      
+  });
 
 // more routes for our API will happen here
 
@@ -54,11 +84,10 @@ app.listen(appEnv.port, '0.0.0.0', function() { //appEnv.port
 });
 
 /*Initialize ERISDB*/
-erisdb = erisDbFactory.createInstance(nodes[0]);
+erisdb = erisDbFactory.createInstance("http://134.168.62.175:1337/rpc");
 erisdb.start(function(error){
     if(!error){
         console.log("Ready to go");
-        console.log("port " + appEnv.port);
     }
 });
 
@@ -79,16 +108,33 @@ var compiledContract = solc.compile(greeterSource);
 var contractFactory = contractManager.newContractFactory(JSON.parse(compiledContract.contracts.greeter.interface)); //parameter is abi
 // console.log(contractFactory)
 
+
+
 /* Send the contract */
 contractFactory.new.apply(contractFactory, ["Hello World",
  {from: account, data:compiledContract.contracts.greeter.bytecode}, (err, contractInstance)=> {
   console.log(contractInstance.address);
+  contractInstanceGlobal = contractInstance;
+  //get data from contract
   contractInstance["greet"].apply(contractInstance, [(error,result)=> {
      if (error) {
        console.log(error);
      }
     else {
       console.log(result);
+
+
+      // contractInstance2 = contractFactory.at(contractInstance.address);
+      // contractInstance2["changeGreet"].apply(contractInstance2, [ "hello hackathon", {from: account}, () => {
+      //     contractInstance2["greet"].apply(contractInstance2, [(error,result)=> {
+      //        if (error) {
+      //          console.log(error);
+      //        }
+      //       else {
+      //         console.log(result);
+      //     }
+      // } ])}]);
+
     }
   }]);
 
