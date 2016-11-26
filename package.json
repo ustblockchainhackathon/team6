@@ -1,0 +1,16 @@
+{
+  "name": "chaintonic",
+	"version": "0.0.1",
+  "dependencies": {
+    "solc":"0.3.4",
+    "eris-db": "0.15.0",
+    "eris-contracts":"0.13.3",
+		"express": "4.13.x",
+		"cfenv": "1.0.x"
+
+  },
+	"repository": {},
+	"engines": {
+		"node": "4.x"
+	} 
+}
