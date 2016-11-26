@@ -25,9 +25,23 @@ var app = express();
 // serve the files out of ./public as our main files
 app.use(express.static(__dirname + '/public'));
 
+// ROUTES FOR OUR API
+// =============================================================================
+var router = express.Router();              // get an instance of the express Router
+
+// test route to make sure everything is working
+router.get('/', function(req, res) {
+    res.json({ message: 'hooray! welcome to our api!' });   
+});
+
+// more routes for our API will happen here
+
+// REGISTER OUR ROUTES -------------------------------
+// all of our routes will be prefixed with /api
+app.use('/api', router);
+
 // get the app environment from Cloud Foundry
 var appEnv = cfenv.getAppEnv();
-
 // start server on the specified port and binding host
 app.listen(appEnv.port, '0.0.0.0', function() { //appEnv.port
   // print a message when the server starts listening
