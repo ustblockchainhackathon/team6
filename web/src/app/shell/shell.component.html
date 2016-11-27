@@ -1,0 +1,17 @@
+<md-sidenav-layout>
+
+  <md-toolbar color="warn">
+    <span [routerLink]=" ['./'] "><i class="material-icons">home</i> ChainTonic</span>
+    <!-- <button md-button [routerLink]="['./']" >Index</button>
+    <button md-button [routerLink]="['./home']" >Home</button>
+    <button md-button [routerLink]="['./about']" >About</button> -->
+    <span class="app-toolbar-filler"></span>
+
+  </md-toolbar>
+  <main class="core-layout__main">
+
+    <!-- Container of our app, used to load lazy load modules -->
+    <router-outlet></router-outlet>
+  
+  </main>
+</md-sidenav-layout>

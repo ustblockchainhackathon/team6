@@ -1,0 +1,54 @@
+<h1  style="text-align:center">Chief Dashboard</h1>
+<md-card>
+   <md-card-header>
+      <img md-card-avatar src="./assets/img/dollar-green.png">
+      <md-card-title>Business Valuation</md-card-title>
+   </md-card-header>
+   
+   <md-card-content>
+      <button md-raised-button color="warn" (click)="getValuation()">Get Business Valuation</button>
+      <md-input class="demo-full-width" placeholder="Total" disabled value="{{valuation}} $">
+      </md-input>
+   </md-card-content>
+</md-card>
+<br>
+<md-card>
+   <md-card-header>
+      <img md-card-avatar src="./assets/img/dollar-red.png">
+      <md-card-title>Deposit</md-card-title>
+   </md-card-header>
+
+   <md-card-content>
+      <md-input placeholder="Value" class="demo-full-width" #deposit
+          value="">
+      </md-input>
+      <button md-raised-button color="warn" (click)="sendDeposit(deposit.value)">Send</button>
+   </md-card-content>
+</md-card>
+<br>
+<md-card>
+   <md-card-header>
+      <img md-card-avatar src="./assets/img/dollar-green.png">
+      <md-card-title>Withdraw</md-card-title>
+   </md-card-header>
+
+   <md-card-content>
+      <md-input placeholder="Value" class="demo-full-width" #withdraw
+          value="">
+      </md-input>
+      <button md-raised-button color="warn" (click)="sendWithdraw(withdraw.value)">Send</button>
+   </md-card-content>
+</md-card>
+<br>
+<md-card>
+   <md-card-header>
+      <img md-card-avatar src="./assets/img/dollar-green.png">
+      <md-card-title>Balance</md-card-title>
+   </md-card-header>
+   
+   <md-card-content>
+      <button md-raised-button color="warn" (click)="getBalance()">Get Balance</button>
+      <md-input class="demo-full-width" placeholder="Total" disabled value="{{balance}}">
+      </md-input>
+   </md-card-content>
+</md-card>

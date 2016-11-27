@@ -1,0 +1,54 @@
+<img src="./assets/img/chaintonic.png" class="logo">
+<md-card>
+   <md-card-subtitle>Welcome!</md-card-subtitle>
+   <md-card-title>Login</md-card-title>   
+   <md-card-content>
+        <md-input placeholder="Username / Email" maxlength="100" class="demo-full-width"
+          value="">
+        </md-input>
+        <md-input placeholder="Password" type="password" class="demo-full-width"
+          value="">
+        </md-input>
+        <button md-raised-button color="accent" [md-menu-trigger-for]="menu">
+            <span>Role</span>
+        </button>
+        <button md-raised-button color="accent" [md-menu-trigger-for]="startupmenu" *ngIf="role != 'investor'">
+            <span>Startup</span>
+        </button>
+        <md-menu #menu="mdMenu">
+            <button md-menu-item (click)="selectRole('employee')"> 
+                <md-icon> person </md-icon>
+                <span> Employee </span>
+            </button>
+            <button md-menu-item (click)="selectRole('chief')"> 
+                <md-icon> tag_faces </md-icon>
+                <span> Chief </span>
+            </button>
+            <button md-menu-item (click)="selectRole('investor')"> 
+                <md-icon> attach_money </md-icon>
+                <span> Investor </span>
+            </button>
+        </md-menu>
+        <md-menu #startupmenu="mdMenu">
+            <button md-menu-item (click)="selectStartup('chaintonic')"> 
+                <md-icon> star </md-icon>
+                <span> ChainTonic </span>
+            </button>
+            <button md-menu-item (click)="selectStartup('ustglobal')"> 
+                <md-icon> star </md-icon>
+                <span> UST GLobal </span>
+            </button>
+            <button md-menu-item (click)="selectStartup('unir')"> 
+                <md-icon> star </md-icon>
+                <span> UNIR </span>
+            </button>
+            <button md-menu-item (click)="selectStartup('bluemix')"> 
+                <md-icon> star </md-icon>
+                <span> Bluemix </span>
+            </button>
+        </md-menu>
+   </md-card-content>
+   <md-card-actions>
+        <button md-raised-button color="warn" (click)="login()">Login</button>
+   </md-card-actions>
+</md-card>

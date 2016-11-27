@@ -1,3 +1,4 @@
 node_modules/
 bower_components/
+web/node_modules/
 npm-debug.log
