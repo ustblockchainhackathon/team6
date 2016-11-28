@@ -2,7 +2,14 @@
 ![ChainTonic](docs/chaintonic-logo.png)
 
 # ChainTonic
-Plataforma 
+
+Prototipo de una Plataforma construida sobre SmartContract con tecnologías BlockChain, con el objetivo de servir de base para las operaciones imprescindibles de las StartUp.
+Esto permitira la construcción de una nueva generación de Startup nativas en el Blockchain, preparadas para sacar todo el partido a este nuevo ecosistema. 
+
+La idea es aprobechar la características de Seguridad, Inmutabilidad y transparencia de la plataforma Blockchain para exponer la actividad de la Startup y potenciar su posibilidades en tres lineas complementarias:
+ * Control de las Operaciones: Que todos los miembros de la empresa e interesados en su actividad podrías acceder de forma segura y controlada.
+ * Visualización del Estado de la Startup: Habiliad de por consultar la salud de la Startup para el CEO, los miembros de la junta de administración, etc.   
+ * Valoración de Startups: Inversores pueden visualizar en base a un sistema transparente de valoración una lista con diferentes Startups.  
 
 ## Tecnologías empleadas:
 
